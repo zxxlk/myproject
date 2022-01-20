@@ -223,6 +223,7 @@ export default {
     this.basic = this.$t("data.basic");
   },
   mounted() {
+    console.log("view");
     this.initEcharts();
     window.onresize = () => {
       this.myEcharts.resize();
