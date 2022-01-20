@@ -1,0 +1,86 @@
+/**
+* 头部导航条-div随着浏览器宽度缩放，可设置min-width设置最小宽度，低于这个宽度不会缩放
+*/
+.headerBox {
+  /* min-width: 900px; */
+  background-color: #1c2e3e;
+  padding: 0 !important;
+}
+.t_left {
+  float: left;
+}
+.t_right {
+  float: right;
+}
+.mg_r20 {
+  margin-right: 20px;
+}
+.mg_l10 {
+  margin-left: 1rem;
+}
+.mg_l1 {
+  margin-left: 1.5rem;
+}
+.mg_r15 {
+  padding-right: 1.5rem;
+}
+.width_300 {
+  width: 315px !important;
+}
+
+.width-full {
+  width: 100%;
+}
+.height-full {
+  height: 100%;
+}
+.width100 {
+  width: 100px;
+  line-height: 28px;
+}
+.mrg_left {
+  margin-left: 5px;
+}
+.mrg_right {
+  margin-right: 5px;
+}
+.mg_l15 {
+  margin-left: 15px;
+}
+.leftTxt {
+  width: 120px;
+  font-size: 13px;
+  line-height: 28px;
+  text-align: end;
+}
+/**
+* 工具栏样式
+*/
+.toolBar {
+  padding: 4px;
+  position: absolute;
+  top: 48px;
+  left: 27px;
+  margin: 13px;
+  background-color: #fff;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  box-shadow: 1px 2px 1px rgb(0, 0, 0, 0.15);
+  display: inline-block;
+  /* min-width: 340px; */
+}
+.tool_left {
+  line-height: 28px;
+}
+.tool-right {
+  line-height: 28px;
+}
+.flex {
+  display: flex;
+}
+.select {
+  width: 100px;
+}
+.grey_icon {
+  color: grey;
+}
