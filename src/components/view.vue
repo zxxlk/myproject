@@ -67,7 +67,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="Relay" prop="relay">
-            <el-select v-model="form.relay" placeholder="请选择">
+            <el-select v-model="form.relay" multiple placeholder="请选择">
               <el-option label="COPEL_relay" value="COPEL_relay"></el-option>
               <el-option
                 label="Reference_relay"
