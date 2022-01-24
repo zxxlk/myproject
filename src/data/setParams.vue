@@ -9,6 +9,14 @@
     >
       <slot></slot>
       <div slot="footer" class="dialog-footer">
+        <el-switch
+          v-model="value"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+          :disabled="switchDisabled"
+          inactive-text="启用点选"
+        >
+        </el-switch>
         <el-button @click="setParamsVisible = false" size="mini"
           >取消
         </el-button>
@@ -33,6 +41,8 @@ export default {
   data() {
     return {
       setParamsVisible: false,
+      value: "false",
+      switchDisabled: false,
     };
   },
   methods: {
@@ -69,6 +79,15 @@ export default {
     .el-form-item {
       margin-bottom: 15px;
     }
+  }
+  .el-switch {
+    margin: 5px;
+  }
+  .el-switch__label.is-active {
+    color: #303133;
+  }
+  .el-switch__label {
+    color: #409eff;
   }
 }
 </style>

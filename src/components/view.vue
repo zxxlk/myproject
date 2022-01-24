@@ -67,11 +67,26 @@
             </el-select>
           </el-form-item>
           <el-form-item label="Relay" prop="relay">
-            <el-select v-model="form.relay" multiple placeholder="请选择">
-              <el-option label="COPEL_relay" value="COPEL_relay"></el-option>
+            <el-select
+              v-model="form.relay"
+              multiple
+              :collapse-tags="collapsetags"
+              placeholder="请选择"
+              @change="changeRelay"
+              :class="collapsetags ? 'height28' : ''"
+            >
+              <el-checkbox
+                v-model="relayCheck.checkAll"
+                :style="{ paddingLeft: '20px' }"
+                :indeterminate="relayCheck.indeterminate"
+                @change="checkAllDevice($event)"
+                >全选</el-checkbox
+              >
               <el-option
-                label="Reference_relay"
-                value="Reference_relay"
+                v-for="item in relayOptions"
+                :key="item.value"
+                :value="item.value"
+                :label="item.label"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -173,7 +188,7 @@ export default {
       basic: "",
       form: {
         ap: "",
-        relay: "",
+        relay: [], //多选是数组
         meter: "",
       },
       apOptions: [
@@ -212,6 +227,56 @@ export default {
           },
         ],
       },
+      relayOptions: [
+        {
+          value: "选项1",
+          label: "黄金糕",
+        },
+        {
+          value: "选项2",
+          label: "双皮奶",
+        },
+        {
+          value: "选项3",
+          label: "蚵仔煎",
+        },
+        {
+          value: "选项4",
+          label: "龙须面",
+        },
+        {
+          value: "选项5",
+          label: "北京烤鸭",
+        },
+        {
+          value: "选项6",
+          label: "黄金糕",
+        },
+        {
+          value: "选项7",
+          label: "黄金糕",
+        },
+        {
+          value: "选项8",
+          label: "黄金糕",
+        },
+        {
+          value: "选项9",
+          label: "黄金糕",
+        },
+        {
+          value: "选项10",
+          label: "黄金糕",
+        },
+        {
+          value: "选项11",
+          label: "黄金糕",
+        },
+      ],
+      relayCheck: {
+        checkAll: false, // 是否选中状态
+        indeterminate: true, //维持全选框不确定状态
+      },
     };
   },
   components: {
@@ -223,13 +288,31 @@ export default {
     this.basic = this.$t("data.basic");
   },
   mounted() {
-    console.log("view");
     this.initEcharts();
     window.onresize = () => {
       this.myEcharts.resize();
     };
   },
   methods: {
+    /**
+     * 实现全选
+     */
+    checkAllDevice(event) {
+      // 全选时，将option所有的数据，都添加到select绑定的数组中
+      this.form.relay = event
+        ? this.relayOptions.map((item) => item.value)
+        : [];
+      this.relayCheck.indeterminate = false;
+    },
+    /**
+     * 选中值发生变化时，维持全选框的状态
+     */
+    changeRelay() {
+      const relayLength = this.form.relay.length;
+      this.relayCheck.indeterminate =
+        relayLength > 0 && relayLength < this.relayOptions.length;
+      this.relayCheck.checkAll = relayLength === this.relayOptions.length;
+    },
     back() {
       // this.$router.go(-1);
       this.$store.commit("changeMessage", "改变state");
@@ -340,6 +423,11 @@ export default {
       msg = this.$store.state.message;
       return msg;
     },
+    collapsetags() {
+      let collapsed = false;
+      collapsed = this.form.relay.length > 7 ? true : false;
+      return collapsed;
+    },
   },
 };
 </script>
@@ -352,5 +440,8 @@ export default {
 }
 .echarts {
   top: 150px;
+}
+.height28 /deep/ .el-input--mini .el-input__inner {
+  height: 28px !important;
 }
 </style>
