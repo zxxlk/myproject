@@ -205,6 +205,8 @@ export default {
           },
         ],
       };
+    } else {
+      this.MapsInit();
     }
   },
   mounted() {
@@ -358,6 +360,7 @@ export default {
     },
     MapsInit() {
       this.service = new window.google.maps.places.AutocompleteService();
+      console.log("查看地图服务是否初始化: >>", this.service);
     },
     displaySuggestions(predictions, status, cb) {
       let searchResults = [];
@@ -378,6 +381,7 @@ export default {
         cb(this.searchResults);
         return;
       }
+      console.log("this.service: >>>", this.service);
       this.service.getQueryPredictions(
         {
           input: queryString,

@@ -42,7 +42,7 @@
         </transition>
       </div>
       <!-- 设置参数 -->
-      <set-params
+      <set-topology-params
         ref="params"
         :paramsTitle="$t('data.paraTitle')"
         @confirmParams="confirmParams"
@@ -96,7 +96,7 @@
             </el-select>
           </el-form-item>
         </el-form>
-      </set-params>
+      </set-topology-params>
       <div style="top: 100px; position: absolute; left: 20px">
         <p>{{ $t("data.hello") }}</p>
         <el-button type="primary" @click="back">{{ vuexMsg }}</el-button>
@@ -111,7 +111,7 @@
 <script>
 import headerBar from "./testHeaderBox.vue";
 import Tip from "../mixins/tip.js";
-import setParams from "../data/setParams.vue";
+import setTopologyParams from "../data/setTopologyParams.vue";
 import * as echarts from "echarts";
 
 export default {
@@ -281,7 +281,7 @@ export default {
   },
   components: {
     headerBar,
-    setParams,
+    setTopologyParams,
   },
   created() {
     const query = this.$route.query;
@@ -416,6 +416,11 @@ export default {
       this.myEcharts = echarts.init(dom);
       this.myEcharts.setOption(this.options);
     },
+
+    /**
+     * 读取csv文件
+     */
+    readCSVFile() {},
   },
   computed: {
     vuexMsg() {
