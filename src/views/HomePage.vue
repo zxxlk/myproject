@@ -28,7 +28,6 @@
         <p ref="pp" id="transition" class="transition">
           这是一个动画文本
         </p>
-
         <a href="http://www.w3school.com.cn" target="iframe_a">点击跳转</a>
         <iframe src="" frameborder="0" name="iframe_a">这是一个iframe</iframe>
       </div>

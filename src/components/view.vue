@@ -3,7 +3,7 @@
     <el-header class="headerBox" height="50px">
       <header-bar></header-bar>
     </el-header>
-    <el-main class="main">
+    <el-main class="main" id="main">
       <div class="toolBar">
         <div class="tool t_left">
           <div @click="toolBarShow = !toolBarShow" class="tool_left">
@@ -99,12 +99,27 @@
       </set-topology-params>
       <div style="top: 100px; position: absolute; left: 20px">
         <p>{{ $t("data.hello") }}</p>
-        <el-button type="primary" @click="back">{{ vuexMsg }}</el-button>
-        <el-button type="primary" @click="CSVToArray">{{
+        <el-button type="primary" size="mini" @click="back">{{
+          vuexMsg
+        }}</el-button>
+        <el-button type="primary" size="mini" @click="location">{{
           this.$store.state.a.msgA
         }}</el-button>
+        <el-button type="danger" size="mini" @click="deLocation">{{
+          this.$store.state.a.msgA
+        }}</el-button>
+        <h3 v-if="awesome">awesome</h3>
+        <h3 v-else>oh no awesome 😢</h3>
       </div>
       <div id="echarts" class="echarts" style="width:400px;height:400px"></div>
+      <ul id="entrust">
+        <li class="item">item1</li>
+        <li class="item">item2</li>
+        <li class="item">item3</li>
+      </ul>
+      <el-button type="primary" @click="addLI" size="mini" id="add"
+        >add</el-button
+      >
     </el-main>
   </el-container>
 </template>
@@ -113,11 +128,14 @@ import headerBar from "./testHeaderBox.vue";
 import Tip from "../mixins/tip.js";
 import setTopologyParams from "../data/setTopologyParams.vue";
 import * as echarts from "echarts";
+import createElement from "../util/virtualDOM";
+import { debounce } from "lodash";
 
 export default {
   mixins: [Tip],
   data() {
     return {
+      awesome: false,
       toolBarShow: true,
       data: [
         {
@@ -133,9 +151,9 @@ export default {
             },
             {
               id: 12,
-              label: "数据2",
+              label: "深拷贝",
               icon: "fa fa-check-circle-o",
-              method: this.showCardData,
+              method: this.deepClone,
             },
           ],
         },
@@ -286,14 +304,34 @@ export default {
   created() {
     const query = this.$route.query;
     this.basic = this.$t("data.basic");
+    // 为了使复用组件的防抖函数相互独立，可在created中设置防抖函数
+    this.deLocation = debounce(this.debounceLocation, 500, { leading: true });
   },
   mounted() {
     this.initEcharts();
     window.onresize = () => {
       this.myEcharts.resize();
     };
+    this.virtualDOM();
+    let dom = document.getElementById("entrust");
+    dom.onclick = (e) => {
+      e = e || window.event;
+      //给li绑定事件，判断是不是li
+      if (e.target.nodeName.toLowerCase() === "li") {
+        console.log(e.target.innerHTML);
+      }
+    };
+    const array = [1, 2, 3, 4, 5, 6];
   },
   methods: {
+    // 增加一个li
+    addLI() {
+      let ul = document.getElementById("entrust");
+      let li = document.createElement("li");
+      li.className = "item";
+      li.innerHTML = "item4";
+      ul.appendChild(li);
+    },
     /**
      * 实现全选
      */
@@ -421,6 +459,145 @@ export default {
      * 读取csv文件
      */
     readCSVFile() {},
+
+    /**
+     * 获取当前浏览器位置,h5 Geolocation实现;
+     * 场景：如果频繁一直点击，会一直向浏览器发送请求，使用防抖优化，在一段时间内，如果频繁点击，只输出最后一次点击的结果，
+     */
+    location: debounce(
+      async function() {
+        try {
+          const location = await this.getLocation();
+          this.$message({
+            message: "当前位置: " + location,
+            type: "success",
+          });
+        } catch (error) {
+          switch (error.code) {
+            case 0:
+              console.log("获取位置信息失败，失败原因: " + error.message);
+              break;
+            case 1: //错误编码 PERMISSION_DENIED
+              console.log("用户拒绝共享其位置信息");
+              break;
+            case 2: //错误编码 POSITION_UNAVAILABLE
+              console.log("尝试获取用户位置，但失败了");
+              break;
+            case 3: //错误编码 TIMEOUT
+              console.log("获取位置信息超时");
+              break;
+          }
+        }
+      },
+      500,
+      { leading: true }
+    ),
+
+    async debounceLocation() {
+      try {
+        const location = await this.getLocation();
+        this.$message({
+          message: "当前位置: " + location,
+          type: "success",
+        });
+      } catch (error) {
+        switch (error.code) {
+          case 0:
+            console.log("获取位置信息失败，失败原因: " + error.message);
+            break;
+          case 1: //错误编码 PERMISSION_DENIED
+            console.log("用户拒绝共享其位置信息");
+            break;
+          case 2: //错误编码 POSITION_UNAVAILABLE
+            console.log("尝试获取用户位置，但失败了");
+            break;
+          case 3: //错误编码 TIMEOUT
+            console.log("获取位置信息超时");
+            break;
+        }
+      }
+    },
+
+    /**
+     * getCurrentPosition有三个参数：
+     * 1. successCallback必选参数，位置信息请求成功后的处理函数
+     * 2. errorCallback 可选，请求错误处理函数
+     * 3. options 可选，调整数据搜集的方式
+     */
+    getLocation() {
+      if (navigator && navigator.geolocation) {
+        return new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              resolve([position.coords.longitude, position.coords.latitude]);
+            },
+            (error) => {
+              reject(error);
+            },
+            {
+              timeout: 2000,
+              maximumAge: Infinity, //浏览器重新计算位置的时间间隔
+            }
+          );
+        });
+      }
+    },
+
+    /**
+     * 手写递归实现深拷贝
+     */
+    deepClone() {
+      const obj = [
+        {
+          name: "臧三",
+          childs: ["小明", "小芳"],
+          fn: function() {},
+          age: undefined,
+        },
+      ];
+      let cloneObj = this.clone(obj);
+      cloneObj[0].childs = [];
+      console.log(cloneObj);
+    },
+    // 检查数据类型
+    checkType: (target) => {
+      return Object.prototype.toString.call(target).slice(8, -1);
+    },
+    // 递归
+    clone(target) {
+      let cloneData;
+      let type = this.checkType(target);
+      // eslint-disable-next-line no-constant-condition
+      cloneData = type === "Object" ? {} : "Array" ? [] : target;
+      for (const i in target) {
+        if (Object.hasOwnProperty.call(target, i)) {
+          const value = target[i];
+          let eleType = this.checkType(value);
+          if (eleType === "Object" || eleType === "Array") {
+            cloneData[i] = this.clone(value);
+          } else {
+            cloneData[i] = value;
+          }
+        }
+      }
+      return cloneData;
+    },
+
+    /**
+     * 利用js构建虚拟DOM
+     */
+    virtualDOM() {
+      // let dom = new createElement("div", { id: "real-dom" }, [
+      //   new createElement("p", {}, ["Virtual DOM"]).render(),
+      //   new createElement("ul", { class: "Virtual-ul" }, [
+      //     new createElement("li", { class: "item" }, ["item 1"]).render(),
+      //     new createElement("li", { class: "item" }, ["item 2"]).render(),
+      //     new createElement("li", { class: "item" }, ["item 3"]).render(),
+      //   ]).render(),
+      // ]);
+      // const VDOM = dom.render();
+      // document.getElementById("main").appendChild(VDOM);
+    },
   },
   computed: {
     vuexMsg() {

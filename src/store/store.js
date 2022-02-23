@@ -36,7 +36,7 @@ const actions = {
 };
 const moduleA = {
   state: {
-    msgA: "msgA",
+    msgA: "获取当前位置",
   },
 };
 const moduleB = {

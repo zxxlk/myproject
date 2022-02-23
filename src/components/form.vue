@@ -292,6 +292,10 @@ export default {
       activeIndex: "1",
     };
   },
+  beforeRouteEnter(to, from, next) {
+    // ...跳转到该路由之前的钩子函数
+    next(); //不执行页面加载不成功
+  },
   components: {
     searchLocation,
     sideMain,
@@ -316,6 +320,23 @@ export default {
       this.draggableObj = new Draggable(this.dragElement, this.options);
       this.dragElement.style.display = "none";
     });
+
+    // 中断ajax请求
+    let ajax = $.ajax({
+      url:
+        "http://192.168.6.107:8080/hgisserver/xu/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=xu%3Aap&outputFormat=application%2Fjson",
+      type: "GET",
+      timeout: 100, // 设置超时时间ms
+      contenType: "application/json",
+      success(res) {},
+      complete(XHR, TextStatus) {
+        if (TextStatus === "timeout") {
+          console.log("请求超时");
+        }
+      },
+      error(error) {},
+    });
+    // ajax.abort(); //手动停止请求
   },
   computed: {
     tableData() {
@@ -364,7 +385,7 @@ export default {
       console.log("close websocket");
     };
     // 跨域
-    // this.jsonpFn();
+    this.jsonpFn();
     /**
      * 切割字符串并拼接
      */
@@ -562,19 +583,20 @@ export default {
      * jsonp解决跨域
      */
     jsonpFn() {
+      // const url =
+      //   "http://192.168.6.107:8080/hgisserver/xu/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=xu%3Aap&maxFeatures=1000000&outputFormat=application%2Fjson";
+      const url = "http://www.doubanapi.com/movie.html";
       $.ajax({
-        url:
-          // "http://192.168.6.107:8080/hgisserver/xu/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=xu%3Aap&maxFeatures=1000000&outputFormat=application%2Fjson",
-          "http://api.douban.com/v2/book/search",
+        url,
         type: "GET",
         dataType: "jsonp",
-        // jsonpCallback: "handleResponse", // 自定义回调函数
-        // contenType: "application/json",
+        jsonpCallback: "handleResponse", // 自定义回调函数
+        contentType: "text/javascript",
         success(res) {
           console.log("res: >>", res);
         },
         error(error) {
-          // console.log(error);
+          console.log("error: >>", error);
         },
       });
     },

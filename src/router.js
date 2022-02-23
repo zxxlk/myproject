@@ -85,7 +85,7 @@ const routes = [{
     },
   },
   {
-    path: "/view",
+    path: "/view/:name",
     name: "view",
     component: view,
     meta: {

@@ -1,11 +1,13 @@
 <template>
   <div class="test_nav">
     <div class="t_left navleft">
+      <!-- <router-link to="/home"> -->
       <img
         src="../../static/img/login_logo.png"
         class="go-homePage-img"
         @click="goHomePage"
       />
+      <!-- </router-link> -->
     </div>
     <div class="t_right mg_r15 login_index">
       <div class="t_right login_username">
@@ -54,6 +56,11 @@
             <el-menu-item v-for="(v, i) in menus" :key="i" :index="v.url">
               <span slot="title">{{ v.name }}</span></el-menu-item
             >
+            <div>
+              <el-menu-item @click="goView">
+                <span>视图</span>
+              </el-menu-item>
+            </div>
           </div>
         </el-menu>
       </el-scrollbar>
@@ -90,11 +97,11 @@ export default {
           name: "模板数据",
           url: "/form",
         },
-        {
-          index: "6",
-          name: "视图",
-          url: "/view",
-        },
+        // {
+        //   index: "6",
+        //   name: "视图",
+        //   url: "/view",
+        // },
       ],
       activeIndex: "",
     };
@@ -137,7 +144,13 @@ export default {
      * 返回首页
      */
     goHomePage() {
-      this.$router.push({ path: "/home" });
+      this.$router.push({ name: "home" });
+    },
+    /**
+     * 动态路由view
+     */
+    goView() {
+      this.$router.push({ name: "view", params: { name: "zxx" } });
     },
   },
 };

@@ -1,11 +1,11 @@
 <template>
   <div id="app">
     <!--路由配置到的组件，将显示在这里（根据路由配置里面的path渲染相应组件）-->
-    <!-- 把需要缓存和不需要缓存的组件分开加载-->
-    <transition name="fade" mdoe="out-in">
+    <!-- 把需要缓存和不需要缓存的组件分开加载,transition过渡组件，mode表示过渡的时间序列-->
+    <transition name="fade" mode="out-in">
       <router-view v-if="$route.meta.keepAlive" />
     </transition>
-    <transition name="fade" mdoe="out-in">
+    <transition name="fade" mode="out-in">
       <router-view v-if="!$route.meta.keepAlive" />
     </transition>
   </div>
