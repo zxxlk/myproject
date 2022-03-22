@@ -12,6 +12,7 @@ import "font-awesome/css/font-awesome.min.css";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import i18n from "./lang/index.js";
+import { get } from "./common/js/httpAxios"
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI); //全局注册组件
@@ -20,6 +21,7 @@ Vue.use(VueMeta, {
   refreshOnceOnNavigation: true,
 });
 Vue.use(VueJsonp);
+Vue.prototype.$get = get //挂载在原型，直接this.$get
 
 // 路由全局守卫，实现路由拦截器，每次跳转时，都对当前路由（地址）进行判断，防止未登录用户随意访问页面
 router.beforeEach((to, from, next) => {
@@ -32,9 +34,9 @@ router.beforeEach((to, from, next) => {
   } else {
     // 在其他地址页面，判断是否有缓存user，如果有随意访问，如果没有，返回登录页面
     if (to.query.language) {
-      if (to.query.language === "zh") {
-        localStorage.setItem("LANGUAGE", "zh");
-        i18n.locale = "zh";
+      if (to.query.language === "zh-CN") {
+        localStorage.setItem("LANGUAGE", "zh-CN");
+        i18n.locale = "zh-CN";
       } else {
         localStorage.setItem("LANGUAGE", to.query.language);
         i18n.locale = to.query.language;
@@ -47,9 +49,9 @@ router.beforeEach((to, from, next) => {
         language = navigator.browserLanguage;
       }
       language = language.substr(0, 2);
-      if (language === "zh") {
-        localStorage.setItem("LANGUAGE", "zh");
-        i18n.locale = "zh";
+      if (language.indexOf('zh-CN') !==-1) {
+        localStorage.setItem("LANGUAGE", "zh-CN");
+        i18n.locale = "zh-CN";
       } else {
         // 其他情况都设置为英文
         localStorage.setItem("LANGUAGE", "en");

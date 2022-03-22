@@ -17,6 +17,9 @@ export default {};
 </script>
 <!--根组件， 相当于项目容器，其他组件都会在这个容器内显示,定义的样式作用于整个项目-->
 <style lang="scss">
+html{
+  font-size: 10px; //屏幕宽度的1%，比如电脑屏幕是1200px ，那1vw就等于12px
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -29,8 +32,8 @@ export default {};
   width: 100%;
 }
 body {
-  padding: 0px;
-  margin: 0px;
+  // padding: 0px;
+  // margin: 0px;
   font-size: 14px;
   overflow: hidden;
 }

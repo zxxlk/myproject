@@ -108,9 +108,18 @@
         <el-button type="danger" size="mini" @click="deLocation">{{
           this.$store.state.a.msgA
         }}</el-button>
-        <h3 v-if="awesome">awesome</h3>
-        <h3 v-else>oh no awesome 😢</h3>
+
+        <a href="javascript:" class="box" @click="useGet()">
+          一元夺宝
+          <div class="ico"></div>
+        </a>
+        <el-button @click="go" size="mini">
+          跳转
+        </el-button>
+        <el-button size="mini" @click="changeHash">hash</el-button>
+        <span class="hashValue">{{ hashValue }}</span>
       </div>
+
       <div id="echarts" class="echarts" style="width:400px;height:400px"></div>
       <ul id="entrust">
         <li class="item">item1</li>
@@ -120,21 +129,58 @@
       <el-button type="primary" @click="addLI" size="mini" id="add"
         >add</el-button
       >
+      
     </el-main>
   </el-container>
 </template>
 <script>
+import "../../static/css/view.scss";
 import headerBar from "./testHeaderBox.vue";
 import Tip from "../mixins/tip.js";
 import setTopologyParams from "../data/setTopologyParams.vue";
 import * as echarts from "echarts";
 import createElement from "../util/virtualDOM";
 import { debounce } from "lodash";
+import Animal from "../common/js/testClass";
+import $ from "jquery";
+// import { get } from "../common/js/httpAxios";
 
 export default {
   mixins: [Tip],
   data() {
     return {
+      menus: [
+        {
+          index: "1",
+          name: "首页",
+          url: "/home",
+        },
+        {
+          index: "2",
+          name: "ESS地图",
+          url: "/essGisMap",
+        },
+        {
+          index: "3",
+          name: "canvas",
+          url: "/canvas",
+        },
+        {
+          index: "4",
+          name: "测试地图",
+          url: "/test",
+        },
+        {
+          index: "5",
+          name: "模板数据",
+          url: "/form",
+        },
+        // {
+        //   index: "6",
+        //   name: "视图",
+        //   url: "/view",
+        // },
+      ],
       awesome: false,
       toolBarShow: true,
       data: [
@@ -295,6 +341,53 @@ export default {
         checkAll: false, // 是否选中状态
         indeterminate: true, //维持全选框不确定状态
       },
+      tableData: [],
+      total: 0, //数据总数，会根据这个值自动分成多少页
+      page: 1, //当前页
+      pageSize: 2, // 每页显示条数
+      allData: [
+        {
+          date: "2016-05-03",
+          name: "Tom",
+          address: "No. 189, Grove St, Los Angeles",
+        },
+        {
+          date: "2016-05-02",
+          name: "Tom",
+          address: "No. 189, Grove St, Los Angeles",
+        },
+        {
+          date: "2016-05-04",
+          name: "Tom",
+          address: "No. 189, Grove St, Los Angeles",
+        },
+        {
+          date: "2016-05-01",
+          name: "Tom",
+          address: "No. 189, Grove St, Los Angeles",
+        },
+        {
+          date: "2016-05-03",
+          name: "Tom",
+          address: "No. 189, Grove St, Los Angeles",
+        },
+        {
+          date: "2016-05-02",
+          name: "Tom",
+          address: "No. 189, Grove St, Los Angeles",
+        },
+        {
+          date: "2016-05-04",
+          name: "Tom",
+          address: "No. 189, Grove St, Los Angeles",
+        },
+        {
+          date: "2016-05-01",
+          name: "Tom",
+          address: "No. 189, Grove St, Los Angeles",
+        },
+      ],
+      hashValue: "",
     };
   },
   components: {
@@ -306,6 +399,11 @@ export default {
     this.basic = this.$t("data.basic");
     // 为了使复用组件的防抖函数相互独立，可在created中设置防抖函数
     this.deLocation = debounce(this.debounceLocation, 500, { leading: true });
+    // 初始查询下表格数据
+    this.tableState(this.page, this.pageSize);
+    const animal = new Animal();
+    // animal.sayHi("hi");
+    this.hashValue = location.hash;
   },
   mounted() {
     this.initEcharts();
@@ -321,9 +419,123 @@ export default {
         console.log(e.target.innerHTML);
       }
     };
-    const array = [1, 2, 3, 4, 5, 6];
+    // 计算一个字符串中，出现字母最多次的字母以及次数
+    this.count();
+    const arr = [13, 3, 3, 4, 5, 9, 1, 2, 3, 4];
+    this.fun(arr, 10);
   },
   methods: {
+    fun(arr, sum) {
+      let tempSum = 0; //临时sum
+      let start = 0;
+      let end = -1;
+
+      for (let i = 0; i < arr.length; i++) {
+        const e = arr[i];
+        tempSum += e;
+        if (sum < tempSum) {
+          tempSum = 0;
+          start += 1;
+        }
+        if (sum === tempSum) {
+          end = i;
+          break;
+        }
+      }
+      if (end === -1) {
+        console.log("没有找到");
+      }
+      console.log(start, end);
+    },
+    /**
+     * js模拟hash路由模式
+     * hash改变，浏览器地址改变，页面内容改变
+     * 点击内容时，改变页面内容，让浏览器地址hash值随之变化，同时监听浏览器hash值，发生变化时，页面内容也随之改变
+     */
+
+    changeHash() {
+      const hash = this.getHash(1);
+      // // 将浏览器的hash值设置为随机生成的
+      // location.hash = hash;
+      // this.hashValue = hash;
+      // window.onhashchange = () => {
+      //   this.hashValue = location.hash.substring()
+      // }
+      //history模式
+      window.history.pushState({ name: "pushstate" }, null, hash); //浏览器的URL变化了，但是却没有跳转到对应的页面
+      this.hashValue = hash;
+      this.$router.push(hash);
+    },
+    getHash(num) {
+      let hash;
+      if (num === 1) {
+        hash = "/form";
+      } else if (num === 2) {
+        hash = "/home";
+      }
+      return hash;
+    },
+    count() {
+      const str = "ajshxnassssaasaikkllll";
+      let json = {};
+      for (let i = 0; i < str.length; i++) {
+        const s = str[i];
+        if (!json[s]) {
+          json[s] = 1;
+        } else {
+          json[s]++;
+        }
+      }
+      let max = 0;
+      let index;
+      for (const key in json) {
+        if (Object.hasOwnProperty.call(json, key)) {
+          const value = json[key];
+          if (value > max) {
+            max = value;
+            index = key;
+          }
+        }
+      }
+      console.log(index, max);
+    },
+    /**
+     * 路由跳转的几种方法
+     */
+    go() {
+      /**router.push跳转页面，向history添加记录，可后退 */
+      const router = this.$router;
+      // router.push({ path: "/home", query: { name: "111" } });
+      /**router.replace 替换当前页面，点击后退会返回到上上个页面 */
+      // router.replace({ path: "/home" });
+      router.go(-2);
+    },
+    /**
+     * 封装的get方法
+     */
+    useGet() {
+      const url =
+        "http://192.168.6.107:8080/hgisserver/xu/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=xu%3Aap&outputFormat=application%2Fjson";
+      this.$get(url).then((data) => {
+        console.log("封装get:>>", data);
+      });
+    },
+    /**
+     * 查询表格数据-模拟后端接口，根据当前页以及显示条数，查询该页数据
+     */
+    tableState(page, pageSize) {
+      this.page = page;
+      let arr = [];
+      if (this.tableData.length <= this.allData.length) {
+        arr = this.allData.slice((page - 1) * pageSize, page * pageSize);
+        this.tableData = arr;
+      }
+      this.tableData[0] = {
+        date: "2016-05-03",
+        name: "Jerry",
+        address: "No. 189, Grove St, Los Angeles",
+      };
+    },
     // 增加一个li
     addLI() {
       let ul = document.getElementById("entrust");
@@ -625,5 +837,46 @@ export default {
 }
 .height28 /deep/ .el-input--mini .el-input__inner {
   height: 28px !important;
+}
+.pageTable {
+  position: absolute;
+  left: 5px;
+  top: 300px;
+}
+
+/**元素无线动画样式 */
+.box {
+  display: inline-block;
+  background-color: #57d430;
+  text-decoration: none;
+  color: #fff;
+  font-size: 14px;
+  padding: 10px 12px;
+  width: 100px;
+  position: relative;
+  margin: 0 10px;
+}
+.ico {
+  position: absolute;
+  width: 24px;
+  height: 16px;
+  background: url(../assets/locate.png) no-repeat center;
+  background-size: 80%;
+  position: absolute;
+  top: 11px;
+  left: 0px;
+  animation: myAni 5s infinite;
+}
+/**如果想定义每次都延迟执行的动画，不能从设置delay入手，可以设置一个前几秒不动的动画，后几秒动。这样就可以实现每次执行都延迟的动画
+* 比如动画一共5秒，延迟3秒执行，就是前60%是没有动画的，后40%定义两秒的动画。
+*/
+@keyframes myAni {
+  0%,
+  60% {
+    left: 0;
+  }
+  100% {
+    left: 100px;
+  }
 }
 </style>

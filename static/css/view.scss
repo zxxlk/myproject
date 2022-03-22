@@ -1,0 +1,53 @@
+$span-color: rgb(46, 73, 230);
+$span-font-size: 5rem;
+
+.hashValue {
+  color: $span-color;
+  margin-left: 10px;
+}
+.float {
+  width: 100px;
+  height: 100px;
+  background-color: aquamarine;
+  border: 1px solid red;
+  float: right;
+}
+
+//flex实现三栏布局
+.container {
+  display: flex; //父元素设置为弹性盒模型，子元素通过设置flex的值，分配父元素空间
+  margin-bottom: 2px;
+}
+.left {
+  width: 100px;
+  height: 20px;
+  background-color: antiquewhite;
+  flex: 0 0 100px;
+}
+.right {
+  width: 200px;
+  height: 20px;
+  background-color: rgb(176, 211, 61);
+  flex: 0 0 200px;
+}
+.center {
+  height: 20px;
+  background-color: rgb(63, 144, 177);
+  flex: 1 1 auto;
+}
+// float实现三栏布局
+.center1 {
+  background-color: rgb(94, 209, 209);
+  height: 50px;
+  margin: 0 100px 0 100px;
+  min-width: 800px;
+}
+.testMenu {
+  background-color: rgb(28, 46, 62);
+  .el-menu-item {
+    float: left;
+    margin: 0 15px;
+    height: 50px;
+    color: black;
+  }
+}

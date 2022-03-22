@@ -9,8 +9,8 @@
       />
       <!-- </router-link> -->
     </div>
-    <div class="t_right mg_r15 login_index">
-      <div class="t_right login_username">
+    <div class="t_right mg_r15 ">
+      <div class="t_right ">
         <el-popover popper-class="header_popover">
           <ul class="userDown" style="list-style: none">
             <li>
@@ -84,7 +84,7 @@ export default {
         },
         {
           index: "3",
-          name: "表单数据",
+          name: "canvas",
           url: "/canvas",
         },
         {

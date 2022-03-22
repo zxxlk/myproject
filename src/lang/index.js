@@ -19,7 +19,6 @@ const messages = {
 };
 
 ElementLocale.i18n((key, value) => i18n.t(key, value)); // 实现element插件国际化
-
 const i18n = new VueI18n({
   locale: localStorage.getItem("LANGUAGE") || "en",
   messages,

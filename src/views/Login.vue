@@ -15,7 +15,7 @@
         >
           <el-form-item>
             <el-select v-model="language" @change="setLan">
-              <el-option label="简体中文" value="zh"></el-option>
+              <el-option label="简体中文" value="zh-CN"></el-option>
               <el-option label="English" value="en"></el-option>
             </el-select>
           </el-form-item>
@@ -229,7 +229,6 @@ export default {
      * 监听键盘回车事件
      */
     window.addEventListener("keydown", this.handleKeyDown, true);
-    console.log(sessionStorage);
   },
   mounted() {
     let language;
@@ -239,10 +238,10 @@ export default {
       language = navigator.browserLanguage;
     }
     // 初始默认语言与浏览器一致
-    if (language.indexOf("zh") !== -1) {
-      this.language = "zh";
-      this.$i18n.locale = "zh";
-      localStorage.setItem("LANGUAGE", "zh");
+    if (language.indexOf("zh-CN") !== -1) {
+      this.language = "zh-CN";
+      this.$i18n.locale = "zh-CN";
+      localStorage.setItem("LANGUAGE", "zh-CN");
     } else {
       // 其他情况都设为英文
       this.language = "en";
@@ -252,9 +251,9 @@ export default {
   },
   methods: {
     setLan() {
-      if (this.language === "zh") {
-        localStorage.setItem("LANGUAGE", "zh");
-        this.$i18n.locale = "zh";
+      if (this.language === "zh-CN") {
+        localStorage.setItem("LANGUAGE", "zh-CN");
+        this.$i18n.locale = "zh-CN";
       } else {
         localStorage.setItem("LANGUAGE", "en");
         this.$i18n.locale = "en";
@@ -302,13 +301,17 @@ export default {
      */
     post(url, data) {
       return new Promise((resolve, reject) => {
+        let res = {};
         if (data.password === "123456" && data.user_no === "user") {
-          data.state = "success";
-          resolve(data);
+          res.state = "success";
+          //第一次客户端请求成功后，服务端返回的信息中，会有一个token，以后再请求资源，需要携带token去认证用户
+          res.token = "1zheshiyigetoken";
+          res.user = data.user_no;
+          resolve(res);
         } else {
-          data.state = "fail";
-          data.errorData = "密码错误";
-          resolve(data);
+          res.state = "fail";
+          res.errorData = "密码错误";
+          resolve(res);
           reject(new Error());
         }
       });

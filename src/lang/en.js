@@ -2,6 +2,8 @@ export default {
   message: {
     tipMessage: "This is a message",
     pleaseSelect: "Please Select",
+    relogin: 'Login Again'
+
   },
   data: {
     basic: "Basic Message",

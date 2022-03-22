@@ -88,9 +88,7 @@ const routes = [{
     path: "/view/:name",
     name: "view",
     component: view,
-    meta: {
-      keepAlive: true,
-    },
+
   },
 ];
 // $router-路由器;$route-当前路由对象

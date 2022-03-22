@@ -2,6 +2,7 @@ export default {
   message: {
     tipMessage: "这是一条提示信息",
     pleaseSelect: "请选择",
+    relogin: '重新登录'
   },
   data: {
     basic: "基本信息",

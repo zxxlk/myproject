@@ -6,6 +6,10 @@
       </el-header>
       <el-main class="width-full height-full">
         <div class="homePage"></div>
+        <div class="div">
+          <div class="div1">div111</div>
+          <div class="div2">div222</div>
+        </div>
       </el-main>
 
       <div class="upload">
@@ -296,5 +300,26 @@ export default {
   100% {
     opacity: 1;
   }
+}
+
+.div{
+  width: 200px;
+  height: 200px;
+  position: relative;
+  background: lightblue;
+  z-index: 111;
+}
+.div1{
+  height: 200px;
+  width: 100px;
+  float: left;
+  background: lawngreen;
+}
+.div2{
+  height: 200px;
+  background: lightcoral;
+  width: 50px;
+  overflow: hidden;
+  margin-left: 2px;
 }
 </style>
