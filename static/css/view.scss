@@ -1,5 +1,8 @@
 $span-color: rgb(46, 73, 230);
 $span-font-size: 5rem;
+$div-width: 100px;
+$div-height: 100px;
+$div-bgcolcor: rgb(148, 235, 216);
 
 .hashValue {
   color: $span-color;
@@ -12,6 +15,33 @@ $span-font-size: 5rem;
   border: 1px solid red;
   float: right;
 }
+/*mixin定义一个混合器，通过include调用该混合器,mixin可以传递参数*/
+@mixin border {
+  border-radius: 10px;
+  border: 2px solid #fff;
+}
+@mixin color($bgcolor, $border-color, $hover-color) {
+  background-color: $bgcolor;
+  border-color: $border-color;
+  &:hover {
+    background-color: $hover-color;
+  }
+}
+.test {
+  width: $div-width;
+  height: $div-height;
+  background-color: $div-bgcolcor;
+  position: absolute;
+  @include border;
+  @include color(rgb(156, 209, 209), rgb(148, 216, 196),rgb(150, 170, 235));
+}
+/*@extend可以继承一个元素的样式*/
+.extend{
+  margin-left: 150px;
+  @extend .test;
+  @include color(lightblue, rgb(128, 147, 201),rgb(70, 188, 228))
+}
+
 
 //flex实现三栏布局
 .container {
@@ -50,4 +80,12 @@ $span-font-size: 5rem;
     height: 50px;
     color: black;
   }
+}
+
+// echarts
+.echarts1 {
+  position: absolute;
+  top: 400px;
+  background-color: rgb(17, 17, 17);
+  left: 650px;
 }

@@ -76,6 +76,7 @@ const routes = [{
     },
   },
   // 动态路由以:配置参数
+
   {
     path: "/form",
     name: "form",

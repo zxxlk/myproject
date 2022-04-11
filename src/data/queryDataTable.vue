@@ -120,8 +120,10 @@ export default {
   },
   methods: {
     pageTableData() {
+      console.log(this.dom.scrollHeight, this.dom.clientHeight,this.dom.scrollTop);
       const scrollDistance =
         this.dom.scrollHeight - this.dom.scrollTop - this.dom.clientHeight;
+      
       if (scrollDistance <= 0) {
         // 滚动条到底时，判断是否表格长度超过总条数，如果没有，上次结束位置为起点，再加载数据
         if (this.tableData.length < this.totalNum) {

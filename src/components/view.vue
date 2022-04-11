@@ -109,7 +109,7 @@
           this.$store.state.a.msgA
         }}</el-button>
 
-        <a href="javascript:" class="box" @click="useGet()">
+        <a href="javascript:" class="box" @click="useGet">
           一元夺宝
           <div class="ico"></div>
         </a>
@@ -118,18 +118,29 @@
         </el-button>
         <el-button size="mini" @click="changeHash">hash</el-button>
         <span class="hashValue">{{ hashValue }}</span>
+        <div class="test">
+          <div class="test-item">test</div>
+        </div>
+        <div class="extend">
+          <div class="extend-item">test</div>
+        </div>
       </div>
+      <div id="echarts" class="echarts" style="width:600px;height:300px"></div>
+      <div
+        id="echarts1"
+        class="echarts1"
+        ref="echarts1"
+        style="width:600px;height:300px"
+      ></div>
 
-      <div id="echarts" class="echarts" style="width:400px;height:400px"></div>
-      <ul id="entrust">
+      <!-- <ul id="entrust">
         <li class="item">item1</li>
         <li class="item">item2</li>
         <li class="item">item3</li>
       </ul>
       <el-button type="primary" @click="addLI" size="mini" id="add"
         >add</el-button
-      >
-      
+      > -->
     </el-main>
   </el-container>
 </template>
@@ -143,7 +154,8 @@ import createElement from "../util/virtualDOM";
 import { debounce } from "lodash";
 import Animal from "../common/js/testClass";
 import $ from "jquery";
-// import { get } from "../common/js/httpAxios";
+import axios from "axios";
+import { get } from "../common/js/httpAxios";
 
 export default {
   mixins: [Tip],
@@ -388,6 +400,7 @@ export default {
         },
       ],
       hashValue: "",
+      myEcharts: null,
     };
   },
   components: {
@@ -404,21 +417,28 @@ export default {
     const animal = new Animal();
     // animal.sayHi("hi");
     this.hashValue = location.hash;
+
   },
   mounted() {
+    //echarts树状关系图
     this.initEcharts();
+    const dom1 = this.$refs.echarts1;
+    let myEcharts1 = echarts.init(dom1);
+    this.getData(this.myEcharts);
+    this.getData(myEcharts1);
     window.onresize = () => {
       this.myEcharts.resize();
+      myEcharts1.resize();
     };
     this.virtualDOM();
-    let dom = document.getElementById("entrust");
-    dom.onclick = (e) => {
-      e = e || window.event;
-      //给li绑定事件，判断是不是li
-      if (e.target.nodeName.toLowerCase() === "li") {
-        console.log(e.target.innerHTML);
-      }
-    };
+    // let dom = document.getElementById("entrust");
+    // dom.onclick = (e) => {
+    //   e = e || window.event;
+    //   //给li绑定事件，判断是不是li
+    //   if (e.target.nodeName.toLowerCase() === "li") {
+    //     console.log(e.target.innerHTML);
+    //   }
+    // };
     // 计算一个字符串中，出现字母最多次的字母以及次数
     this.count();
     const arr = [13, 3, 3, 4, 5, 9, 1, 2, 3, 4];
@@ -657,6 +677,7 @@ export default {
         }
       });
     },
+
     /**
      * 初始化echarts
      */
@@ -664,7 +685,100 @@ export default {
       // 初始化echarts
       const dom = document.getElementById("echarts");
       this.myEcharts = echarts.init(dom);
-      this.myEcharts.setOption(this.options);
+      //this.myEcharts.setOption(this.options);
+    },
+    /**
+     * 获取echarts数据
+     * 获取本地json文件，放在public文件夹下
+     */
+    getData(echarts) {
+      echarts.showLoading();
+      // ajax分段获取大数据
+      const dataUrl = "./data.json";
+
+      $.ajax({
+        type: "GET",
+        url: dataUrl,
+        async: true,
+        dataType: "json",
+        success: (res) => {
+          echarts.hideLoading();
+          const lineData = [];
+          const lineName = [];
+          if (res.data.length > 0) {
+            for (let i = 0; i < res.data.length; i++) {
+              lineData.push([
+                res.data[i].time.slice(11, 19),
+                res.data[i].value,
+              ]);
+              lineName.push(res.data[i].time.slice(11, 19));
+            }
+          }
+          this.setOption(lineData, lineName, echarts);
+        },
+        error(err) {
+          console.log(err);
+        },
+      });
+    },
+    setOption(data, name, echarts) {
+      const option = {
+        tooltip: {
+          trigger: "axis",
+        },
+        xAxis: {
+          type: "category",
+          data: name,
+        },
+        yAxis: {
+          type: "value",
+        },
+        series: [
+          {
+            data: [],
+            type: "line",
+          },
+        ],
+        dataZoom: [
+          // slider是在坐标轴上显示滑动
+          {
+            id: "dataZoomX",
+            type: "slider",
+            xAxisIndex: [0],
+            filterMode: "filter",
+            start: 0, //表示的是显示的百分比范围
+            end: 30,
+          },
+          {
+            id: "dataZoomY",
+            type: "slider",
+            yAxisIndex: [0],
+            filterMode: "filter",
+            start: 80,
+            end: 100,
+          },
+          //inside是可以通过拖拽，缩放
+          {
+            type: "inside",
+            aAxisIndex: [0],
+            start: 0,
+            end: 30,
+          },
+          {
+            type: "inside",
+            yAxisIndex: [0],
+            start: 80,
+            end: 100,
+          },
+        ],
+      };
+      echarts.setOption(option);
+      // echarts分片加载数据，增量渲染
+      echarts.appendData({
+        seriesIndex: 0,
+        data: data,
+      });
+      echarts.resize();
     },
 
     /**
@@ -811,6 +925,10 @@ export default {
       // document.getElementById("main").appendChild(VDOM);
     },
   },
+  beforeDestroy() {
+    console.log(this.myEcharts);
+    this.myEcharts.clear();
+  },
   computed: {
     vuexMsg() {
       let msg = "";
@@ -833,7 +951,9 @@ export default {
   border: none;
 }
 .echarts {
-  top: 150px;
+  position: absolute;
+  top: 400px;
+  background-color: rgb(32, 32, 32);
 }
 .height28 /deep/ .el-input--mini .el-input__inner {
   height: 28px !important;

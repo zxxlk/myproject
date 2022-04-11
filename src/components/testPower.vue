@@ -35,6 +35,7 @@ import { MousePosition } from "ol/control";
 import headerBar from "../components/testHeaderBox.vue";
 import OverviewMap from "ol/control/OverviewMap";
 import T from "../modules/test";
+import layerSwitcher from "ol-ext/control/LayerSwitcher";
 
 console.log("导入的模块: >>>", T);
 
@@ -115,11 +116,17 @@ export default {
   mounted() {
     T.staticFun(1);
     this.map = this.initMap();
+    this.map.addControl(
+      new layerSwitcher({
+        tipLabel: "legend",
+        trash: true,
+      })
+    );
     this.OSMLayer = this.createOSMLayer();
     this.map.addLayer(this.OSMLayer);
     this.map.addControl(this.addMouseControl());
-    // this.vectorWMSLayer = this.createVectorWMSLayer();
-    // this.map.addLayer(this.vectorWMSLayer);
+    this.vectorWMSLayer = this.createVectorWMSLayer();
+    this.map.addLayer(this.vectorWMSLayer);
     // this.clusterLayer = this.createClusterLayer();
     // this.map.addLayer(this.clusterLayer);
     // this.clusterLayer.setStyle(this.setClusterLayerStyle);
@@ -143,6 +150,7 @@ export default {
     createLayer() {
       let layer = new VectorLayer({
         source: new VectorSource(),
+        displayInLayerSwitcher: false,
       });
       const polygon = new Feature({
         geometry: new Polygon([
@@ -249,6 +257,9 @@ export default {
     createOSMLayer() {
       return new TileLayer({
         source: new OSM(),
+        name: "OSM",
+        title: "OSM",
+        baseLayer: true,
       });
     },
 
@@ -265,6 +276,9 @@ export default {
             SRS: "EPSG:900913",
           },
         }),
+        name: "TileWMS",
+        baseLayer: true,
+        visible: false,
       });
     },
 
@@ -326,6 +340,7 @@ export default {
         source: new Cluster({
           source: new VectorSource(),
         }),
+        displayInLayerSwitcher: false,
       });
       powerStationVectorLayer
         .getSource()
